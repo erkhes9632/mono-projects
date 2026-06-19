@@ -7,7 +7,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bun build ./src/server.ts --outdir ./dist --target bun",
+        "command": "bun next build ",
         "cwd": "apps/todo/todo-service"
       }
     },
