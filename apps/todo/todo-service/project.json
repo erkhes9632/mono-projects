@@ -14,7 +14,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bun run --watch src/server.ts",
+        "command": "bun run --hot src/server.ts",
         "cwd": "apps/todo/todo-service"
       }
     },
