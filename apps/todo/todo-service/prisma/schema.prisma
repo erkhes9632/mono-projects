@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js" 
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique 
+  password  String
+  xp        Int      @default(0)
+  level     Int      @default(1)
+  todos     Todo[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Todo {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  xpReward    Int
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

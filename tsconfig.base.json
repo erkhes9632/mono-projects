@@ -1,0 +1,25 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0",
+    "resolvePackageJsonImports": true,
+    "importHelpers": false,
+    "target": "es2024",
+    "module": "esnext",
+    "skipLibCheck": true,
+    "paths": {
+      "@erkhes-monorepo/shadcn": ["./libs/shared/shadcn/src/index.ts"],
+      "@erkhes-monorepo/shadcn/utils": [
+        "./libs/shared/shadcn/src/lib/utils.ts"
+      ],
+      "@erkhes-monorepo/shadcn/ui": ["./libs/shared/shadcn/src/ui"],
+      "@erkhes-monorepo/shadcn/lib": ["./libs/shared/shadcn/src/lib"],
+      "@erkhes-monorepo/shadcn/hooks": ["./libs/shared/shadcn/src/hooks"],
+      "@erkhes-monorepo/shadcn/server": ["./libs/shared/shadcn/src/server.ts"],
+      "@erkhes-monorepo/todo-service": ["./apps/todo/todo-service/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
