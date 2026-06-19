@@ -2,8 +2,15 @@
   "name": "todo-service",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/todo/todo-service/src",
-  "projectType": "library",
+  "projectType": "application",
   "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bun build ./src/server.ts --outdir ./dist --target bun",
+        "cwd": "apps/todo/todo-service"
+      }
+    },
     "serve": {
       "executor": "nx:run-commands",
       "options": {
