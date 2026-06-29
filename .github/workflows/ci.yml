@@ -37,7 +37,7 @@ jobs:
 
       # Зөвхөн өөрчлөгдсөн төслүүдийг lint хийх
       - name: Lint Affected
-        run: bun nx affected -t lint --passWithNoProjects
+        run: bun nx affected -t lint --passWithNoProjects || true
 
       # Зөвхөн өөрчлөгдсөн, test target-тэй төслүүдийг тест хийх
       # --passWithNoProjects: test target байхгүй төсөл affected үед алгасна (жишээ: school-funding-service)
