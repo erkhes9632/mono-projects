@@ -18,7 +18,12 @@
       "@erkhes-monorepo/shadcn/lib": ["./libs/shared/shadcn/src/lib"],
       "@erkhes-monorepo/shadcn/hooks": ["./libs/shared/shadcn/src/hooks"],
       "@erkhes-monorepo/shadcn/server": ["./libs/shared/shadcn/src/server.ts"],
-      "@erkhes-monorepo/todo-service": ["./apps/todo/todo-service/src/index.ts"]
+      "@erkhes-monorepo/todo-service": [
+        "./apps/todo/todo-service/src/index.ts"
+      ],
+      "@erkhes-monorepo/school-funding-service": [
+        "./apps/school-funding/school-funding-service/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "dist"]

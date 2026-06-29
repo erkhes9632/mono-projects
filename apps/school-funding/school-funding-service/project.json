@@ -1,0 +1,65 @@
+{
+  "name": "school-funding-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/school-funding/school-funding-service/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx wrangler dev src/index.ts --local",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "codegen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "graphql-codegen --config codegen.ts",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "drizzle:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx drizzle-kit generate",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "drizzle:migrate:local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx wrangler d1 migrations apply school-funding-db-service --local",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "drizzle:migrate:remote": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx wrangler d1 migrations apply school-funding-db-service --remote",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "drizzle:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx drizzle-kit studio",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "d1:clear:local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf .wrangler/state/v3/d1 && rm -rf drizzle",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx wrangler deploy src/index.ts",
+        "cwd": "apps/school-funding/school-funding-service"
+      }
+    }
+  }
+}

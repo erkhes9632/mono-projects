@@ -1,0 +1,91 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  continuous-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Derive appropriate SHAs for CI
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # GitHub-ийн өөрийн кэшийг Nx-ийн кэштэй холбох
+      - name: Cache Nx Local Workspace
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      # Зөвхөн өөрчлөгдсөн төслүүдийг lint хийх
+      - name: Lint Affected
+        run: bun nx affected -t lint --passWithNoProjects
+
+      # Зөвхөн өөрчлөгдсөн, test target-тэй төслүүдийг тест хийх
+      # --passWithNoProjects: test target байхгүй төсөл affected үед алгасна (жишээ: school-funding-service)
+      - name: Test Affected
+        run: bun nx affected -t test --parallel=3 --passWithNoProjects
+
+  continuous-deployment:
+    needs: continuous-integration
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Derive appropriate SHAs for CI
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # CI job-н Nx кэшийг дахин ашиглах (read-only — CI аль хэдийн хадгалсан)
+      - name: Restore Nx Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      # Өөрчлөгдсөн төслүүдийн жагсаалт гаргах
+      - name: Get Affected Projects
+        id: affected
+        run: |
+          PROJECTS=$(bun nx show projects --affected 2>/dev/null || echo "")
+          echo "projects=${PROJECTS}" >> $GITHUB_OUTPUT
+
+      # Тус бүрийн deploy алхам өөрийн CLOUDFLARE secret-тэй
+      # Шинэ Workers төсөл нэмэхэд доорх загварыг хуулан нэмнэ
+      - name: Deploy school-funding-service
+        if: contains(steps.affected.outputs.projects, 'school-funding-service')
+        run: bun nx run school-funding-service:deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.SF_CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.SF_CLOUDFLARE_ACCOUNT_ID }}
