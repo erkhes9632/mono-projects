@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/d1';
-import * as schema from './user.schema';
+import * as schema from './schema';
 
-export * from './user.schema';
+export * from './schema';
 
 export const createDb = (env: Env) => drizzle(env.DB, { schema });

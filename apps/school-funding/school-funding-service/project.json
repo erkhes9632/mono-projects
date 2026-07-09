@@ -8,7 +8,7 @@
     "dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bunx wrangler dev src/index.ts --local",
+        "command": "bunx wrangler dev --remote",
         "cwd": "apps/school-funding/school-funding-service"
       }
     },

@@ -1,9 +1,9 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
+    // "rootDir": ".",
     "moduleResolution": "bundler",
-    "ignoreDeprecations": "6.0",
+    // "ignoreDeprecations": "6.0",
     "resolvePackageJsonImports": true,
     "importHelpers": false,
     "target": "es2024",
@@ -23,7 +23,8 @@
       ],
       "@erkhes-monorepo/school-funding-service": [
         "./apps/school-funding/school-funding-service/src/index.ts"
-      ]
+      ],
+      "@erkhes-monorepo/clerk": ["./libs/shared/clerk/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist"]

@@ -1,19 +1,32 @@
 import { drizzleProvider } from '../drizzle.provider';
+import { DrizzleD1Database } from 'drizzle-orm/d1';
+import * as schema from '../db/schema';
 
 export enum Role {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
+  STUDENT = 'STUDENT',
+  TEACHER = 'TEACHER',
 }
 
-export type Maybe<T> = T | null | undefined;
+export enum ProjectStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  FUNDED = 'FUNDED',
+}
+
+export enum TransactionType {
+  EARN = 'EARN',
+  STAKE = 'STAKE',
+  REFUND = 'REFUND',
+}
 
 export type DB = ReturnType<typeof drizzleProvider>;
 
-export interface GraphQLContext {
-  db: DB;
+export type GraphQLContext = {
+  db: DrizzleD1Database<typeof schema>;
   env: Env;
-  userId?: string;
-}
+  userId?: string | null;
+};
 
 export type BaseResolver<TArgs = any, TResult = any, TParent = unknown> = (
   parent: TParent,
@@ -22,28 +35,117 @@ export type BaseResolver<TArgs = any, TResult = any, TParent = unknown> = (
   info: any,
 ) => Promise<TResult> | TResult;
 
+// Data Types
 export type UserType = {
   id: string;
   userName: string;
   email: string;
+  avatarUrl?: string | null;
   role: Role;
-  age?: number | null;
+  coinBalance: number;
+  createdAt: string;
+  updatedAt: string;
+  projects?: ProjectType[];
+};
+
+export type ProjectType = {
+  id: string;
+  title: string;
+  description: string;
+  images: string[];
+  creatorId: string;
+  status: ProjectStatus;
+  reviewedById?: string | null;
+  totalCoinsCollected: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FundingType = {
+  id: string;
+  projectId: string;
+  studentId: string;
+  coinAmount: number;
   createdAt: string;
 };
 
+export type CommentType = {
+  id: string;
+  projectId: string;
+  authorId: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CoinTransactionType = {
+  id: string;
+  userId: string;
+  amount: number;
+  type: TransactionType;
+  referenceId?: string | null;
+  createdAt: string;
+};
+
+// Input Types
 export type UserInput = {
   userName: string;
   email: string;
+  avatarUrl?: string;
+  role: Role;
+};
+
+export type ProjectInput = {
+  title: string;
+  description: string;
+  images?: string[];
+  creatorId: string;
+};
+
+export type CommentInput = {
+  projectId: string;
+  authorId: string;
+  content: string;
 };
 
 export type MutationResponse = {
+  success: boolean;
   message: string;
 };
 
-export interface CreateUserMutationResolvers {
-  createUser: BaseResolver<{ input: UserInput }, MutationResponse>;
+// Resolvers Interfaces
+export interface QueryResolvers {
+  getUsers: BaseResolver<{ searchName?: string }, UserType[]>;
+  getProjects: BaseResolver<{ status?: ProjectStatus }, ProjectType[]>;
+  getProjectById: BaseResolver<{ id: string }, ProjectType | null>;
+  getProjectComments: BaseResolver<{ projectId: string }, CommentType[]>;
+  getUserTransactions: BaseResolver<{ userId: string }, CoinTransactionType[]>;
+  getLeaderboardProjects: BaseResolver<{ limit?: number }, ProjectType[]>;
+  getFundedProjects: BaseResolver<{ limit?: number }, ProjectType[]>;
 }
 
-export interface GetUserQueryResolvers {
-  getUsers: BaseResolver<unknown, UserType[]>;
+export interface MutationResolvers {
+  updateUserRole: BaseResolver<{ role: 'STUDENT' | 'TEACHER' }, UserType>;
+  createUser: BaseResolver<{ input: UserInput }, UserType>;
+  createProject: BaseResolver<{ input: ProjectInput }, ProjectType>;
+  reviewProject: BaseResolver<
+    { projectId: string; reviewerId: string; status: ProjectStatus },
+    ProjectType
+  >;
+  stakeCoins: BaseResolver<
+    { projectId: string; studentId: string; amount: number },
+    MutationResponse
+  >;
+  addComment: BaseResolver<{ input: CommentInput }, CommentType>;
+  updateMe: BaseResolver<
+    { input: { userName: string; avatarUrl?: string } },
+    UserType
+  >;
+  deleteMe: BaseResolver<unknown, MutationResponse>;
+
+  updateProject: BaseResolver<{ id: string; input: ProjectInput }, ProjectType>;
+  deleteProject: BaseResolver<{ id: string }, MutationResponse>;
+
+  updateComment: BaseResolver<{ id: string; content: string }, CommentType>;
+  deleteComment: BaseResolver<{ id: string }, MutationResponse>;
 }

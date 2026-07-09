@@ -49,3 +49,4 @@ out
 .env
 .dev.vars
 .wrangler
+.env.local

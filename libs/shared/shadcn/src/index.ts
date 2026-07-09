@@ -21,3 +21,7 @@ export * from './ui/tabs';
 export * from './ui/textarea';
 export * from './ui/progress';
 export * from './ui/badge';
+export * from './ui/sidebar';
+export * from './ui/skeleton';
+export * from './ui/sonner';
+export * from './ui/tooltip';

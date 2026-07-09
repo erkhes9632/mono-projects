@@ -8,6 +8,13 @@
       "when": 1782699452907,
       "tag": "0000_nasty_sandman",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1782706238694,
+      "tag": "0001_amusing_calypso",
+      "breakpoints": true
     }
   ]
 }

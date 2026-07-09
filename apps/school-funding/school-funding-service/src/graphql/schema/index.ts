@@ -1,5 +1,5 @@
-import { usertypeDefs } from './user.schema';
+import { typeDefs } from './schema';
 
-export const TypeDefs = [usertypeDefs];
+export const TypeDefs = [typeDefs];
 
-export * from './user.schema';
+export * from './schema';

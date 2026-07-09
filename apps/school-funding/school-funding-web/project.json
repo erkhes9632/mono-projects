@@ -1,0 +1,9 @@
+{
+  "name": "school-funding-web",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/school-funding/school-funding-web",
+  "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project school-funding-web --web",
+  "targets": {}
+}

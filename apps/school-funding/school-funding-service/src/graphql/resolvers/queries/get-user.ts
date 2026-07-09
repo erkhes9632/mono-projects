@@ -1,22 +1,27 @@
-import { usersTable } from '../../../db/user.schema';
-import { GetUserQueryResolvers } from '../../../types';
+import { ilike } from 'drizzle-orm';
+import { GraphQLError } from 'graphql';
+import { usersTable } from '../../../db/schema';
+import { QueryResolvers } from '../../../types';
 
-export const getUsers: GetUserQueryResolvers['getUsers'] = async (
+export const getUsers: QueryResolvers['getUsers'] = async (
   _,
-  __,
-  { db },
+  { searchName },
+  { db, userId },
 ) => {
-  const users = await db.select().from(usersTable);
+  if (!userId) {
+    throw new GraphQLError('You need to SignIn');
+  }
 
-  return users.map((user) => ({
-    id: user.id,
-    userName: user.userName,
-    email: user.email,
-    avatarUrl: user.avatarUrl ?? null,
-    age: user.age ?? null,
-    role: user.role,
-    coinBalance: user.coinBalance,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-  }));
+  try {
+    const query = db.select().from(usersTable);
+
+    if (searchName) {
+      query.where(ilike(usersTable.userName, `%${searchName}%`));
+    }
+
+    const users = await query;
+    return users as any;
+  } catch (err) {
+    return [];
+  }
 };
