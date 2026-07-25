@@ -17,6 +17,7 @@ node_modules
 .settings/
 *.sublime-workspace
 cloudflare
+.open-next/
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
