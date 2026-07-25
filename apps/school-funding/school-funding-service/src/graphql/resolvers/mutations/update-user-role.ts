@@ -9,18 +9,22 @@ export const updateUserRole: MutationResolvers['updateUserRole'] = async (
   { db, userId },
 ) => {
   if (!userId) {
-    throw new GraphQLError('Unauthorized');
+    throw new GraphQLError('Unauthorized', {
+      extensions: { code: 'UNAUTHENTICATED' },
+    });
   }
 
-  if (role !== 'STUDENT' && role !== 'TEACHER') {
-    throw new GraphQLError('Invalid role provided');
+  if (role !== Role.STUDENT && role !== Role.TEACHER) {
+    throw new GraphQLError('Invalid role provided', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
   }
 
   try {
     const [updatedUser] = await db
       .update(usersTable)
       .set({
-        role: role as 'STUDENT' | 'TEACHER',
+        role: role as Role,
         updatedAt: new Date().toISOString(),
       })
       .where(eq(usersTable.id, userId))
@@ -37,10 +41,11 @@ export const updateUserRole: MutationResolvers['updateUserRole'] = async (
       avatarUrl: updatedUser.avatarUrl,
       role: updatedUser.role as Role,
       coinBalance: updatedUser.coinBalance,
-      createdAt: updatedUser.createdAt,
-      updatedAt: updatedUser.updatedAt,
+      createdAt: String(updatedUser.createdAt),
+      updatedAt: String(updatedUser.updatedAt),
     };
-  } catch (err) {
+  } catch (err: unknown) {
+    if (err instanceof GraphQLError) throw err;
     console.error('Error in updateUserRole resolver:', err);
     throw new GraphQLError('Failed to update user role');
   }

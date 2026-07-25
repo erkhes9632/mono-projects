@@ -151,7 +151,7 @@ function ProfileContent() {
                     <BarChart3 className="h-4 w-4 text-emerald-500 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.6)] transition-all" />
                   </div>
                   <div className="text-2xl font-black text-white tracking-tight">
-                    {currentXp}{' '}
+                    {currentXp}
                     <span className="text-xs font-mono font-bold text-neutral-500">
                       / {xpNeeded} XP
                     </span>

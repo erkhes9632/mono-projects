@@ -5,5 +5,17 @@
   "projectType": "application",
   "tags": [],
   "// targets": "to see all targets run: nx show project school-funding-web --web",
-  "targets": {}
+  "targets": {},
+  "deploy": {
+    "executor": "nx:run-commands",
+    "options": {
+      "commands": [
+        "bunx next build",
+        "bunx opennextjs-cloudflare build --skipNextBuild",
+        "bunx opennextjs-cloudflare deploy"
+      ],
+      "parallel": false,
+      "cwd": "apps/school-funding/school-funding-web"
+    }
+  }
 }

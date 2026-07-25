@@ -8,10 +8,11 @@ export const updateMe: MutationResolvers['updateMe'] = async (
   { input },
   { db, userId },
 ) => {
-  if (!userId)
-    throw new GraphQLError('SignIn', {
+  if (!userId) {
+    throw new GraphQLError('You need to SignIn', {
       extensions: { code: 'UNAUTHENTICATED' },
     });
+  }
 
   const [updatedUser] = await db
     .update(usersTable)
@@ -30,15 +31,16 @@ export const deleteMe: MutationResolvers['deleteMe'] = async (
   __,
   { db, userId },
 ) => {
-  if (!userId)
-    throw new GraphQLError('SignIn', {
+  if (!userId) {
+    throw new GraphQLError('You need to SignIn', {
       extensions: { code: 'UNAUTHENTICATED' },
     });
+  }
 
   await db.delete(usersTable).where(eq(usersTable.id, userId));
 
   return {
     success: true,
-    message: 'Succesfully deleted',
+    message: 'Successfully deleted',
   };
 };

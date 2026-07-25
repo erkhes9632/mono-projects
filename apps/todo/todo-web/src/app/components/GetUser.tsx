@@ -79,7 +79,7 @@ export const GetUser = () => {
           Active Identities
         </h2>
         <span className="font-mono text-[11px] font-bold text-neutral-500 bg-neutral-900/60 px-3 py-1 rounded-md border border-neutral-800/80">
-          TOTAL:{' '}
+          TOTAL:
           <span className="text-white font-black">{data.getUsers.length}</span>
         </span>
       </div>
@@ -111,7 +111,7 @@ export const GetUser = () => {
               <div className="flex items-center gap-2 text-amber-500/90 bg-amber-500/5 px-2.5 py-1 rounded-md border border-amber-500/10">
                 <Shield className="h-3.5 w-3.5" />
                 <span>
-                  LVL{' '}
+                  LVL
                   <strong className="text-white font-black">
                     {user.level ?? 1}
                   </strong>
@@ -120,7 +120,7 @@ export const GetUser = () => {
               <div className="flex items-center gap-2 text-emerald-500/90 bg-emerald-500/5 px-2.5 py-1 rounded-md border border-emerald-500/10 justify-end">
                 <Zap className="h-3.5 w-3.5" />
                 <span>
-                  XP{' '}
+                  XP
                   <strong className="text-white font-black">
                     {user.xp ?? 0}
                   </strong>

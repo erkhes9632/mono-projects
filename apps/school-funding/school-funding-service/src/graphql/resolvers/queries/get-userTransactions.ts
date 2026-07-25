@@ -11,11 +11,14 @@ export const getUserTransactions: QueryResolvers['getUserTransactions'] =
       });
     }
 
+    // Хэрэв targetUserId заагаагүй бол нэвтэрсэн хэрэглэгчийн ID-г ашиглана
+    const queryUserId = targetUserId || userId;
+
     try {
       const transactions = await db
         .select()
         .from(coinTransactionsTable)
-        .where(eq(coinTransactionsTable.userId, targetUserId || userId))
+        .where(eq(coinTransactionsTable.userId, queryUserId))
         .orderBy(desc(coinTransactionsTable.createdAt));
 
       return transactions.map((t) => ({
@@ -24,9 +27,10 @@ export const getUserTransactions: QueryResolvers['getUserTransactions'] =
         amount: t.amount,
         type: t.type as TransactionType,
         referenceId: t.referenceId ?? null,
-        createdAt: t.createdAt,
+        createdAt: String(t.createdAt),
       }));
     } catch (err: unknown) {
+      console.error('Error fetching user transactions:', err);
       return [];
     }
   };

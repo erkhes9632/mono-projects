@@ -32,18 +32,18 @@ export const createProject: MutationResolvers['createProject'] = async (
       id: newProject.id,
       title: newProject.title,
       description: newProject.description,
-      images: newProject.images,
+      images: Array.isArray(newProject.images) ? newProject.images : [],
       creatorId: newProject.creatorId,
       status: newProject.status as ProjectStatus,
-      reviewedById: newProject.reviewedById,
+      reviewedById: newProject.reviewedById ?? null,
       totalCoinsCollected: newProject.totalCoinsCollected,
-      createdAt: newProject.createdAt,
-      updatedAt: newProject.updatedAt,
+      createdAt: String(newProject.createdAt),
+      updatedAt: String(newProject.updatedAt),
     };
   } catch (err: unknown) {
     throw new GraphQLError(
       err instanceof Error
-        ? `An error occurred while creating the project.: ${err.message}`
+        ? `An error occurred while creating the project: ${err.message}`
         : 'System error',
     );
   }

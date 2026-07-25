@@ -31,7 +31,9 @@ export const handleClerkWebhook = async (
   if (eventType === 'user.created' || eventType === 'user.updated') {
     const email = email_addresses?.[0]?.email_address || '';
     const userName =
-      `${first_name || ''} ${last_name || ''}`.trim() || 'New User';
+      `${first_name || ''} ${last_name || ''}`.trim() ||
+      email.split('@')[0] ||
+      'User';
 
     const avatarUrl = image_url || null;
 

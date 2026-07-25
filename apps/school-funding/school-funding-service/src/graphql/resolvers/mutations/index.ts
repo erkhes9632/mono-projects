@@ -6,4 +6,5 @@ export * from './manage-comment';
 export * from './manage-project';
 export * from './manage-user';
 export * from './manage-coin';
+export * from './manage-notification';
 export * from './update-user-role';

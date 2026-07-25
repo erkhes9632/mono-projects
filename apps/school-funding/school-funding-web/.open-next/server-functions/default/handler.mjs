@@ -1,0 +1,1 @@
+export { handler } from "./apps/school-funding/school-funding-web/handler.mjs";

@@ -87,6 +87,18 @@ export type CoinTransactionType = {
   createdAt: string;
 };
 
+// Notification Types
+export type NotificationType = {
+  id: string;
+  userId: string;
+  type: string;
+  title: string;
+  message: string;
+  projectId?: string | null;
+  isRead: boolean;
+  createdAt: string;
+};
+
 // Input Types
 export type UserInput = {
   userName: string;
@@ -116,12 +128,17 @@ export type MutationResponse = {
 // Resolvers Interfaces
 export interface QueryResolvers {
   getUsers: BaseResolver<{ searchName?: string }, UserType[]>;
+  getUserById: BaseResolver<{ id?: string }, UserType | null>;
   getProjects: BaseResolver<{ status?: ProjectStatus }, ProjectType[]>;
+  getMyProjects: BaseResolver<unknown, ProjectType[]>;
   getProjectById: BaseResolver<{ id: string }, ProjectType | null>;
   getProjectComments: BaseResolver<{ projectId: string }, CommentType[]>;
   getUserTransactions: BaseResolver<{ userId: string }, CoinTransactionType[]>;
   getLeaderboardProjects: BaseResolver<{ limit?: number }, ProjectType[]>;
   getFundedProjects: BaseResolver<{ limit?: number }, ProjectType[]>;
+  getUserProjects: BaseResolver<{ userId: string }, ProjectType[]>;
+  getNotifications: BaseResolver<{ onlyUnread?: boolean }, NotificationType[]>;
+  getUnreadNotificationCount: BaseResolver<unknown, number>;
 }
 
 export interface MutationResolvers {
@@ -133,7 +150,7 @@ export interface MutationResolvers {
     ProjectType
   >;
   stakeCoins: BaseResolver<
-    { projectId: string; studentId: string; amount: number },
+    { projectId: string; amount: number },
     MutationResponse
   >;
   addComment: BaseResolver<{ input: CommentInput }, CommentType>;
@@ -148,4 +165,10 @@ export interface MutationResolvers {
 
   updateComment: BaseResolver<{ id: string; content: string }, CommentType>;
   deleteComment: BaseResolver<{ id: string }, MutationResponse>;
+  markNotificationRead: BaseResolver<{ id: string }, MutationResponse>;
+  markAllNotificationsRead: BaseResolver<unknown, MutationResponse>;
+  addCoinsToStudent: BaseResolver<
+    { studentId: string; amount: number },
+    MutationResponse
+  >;
 }

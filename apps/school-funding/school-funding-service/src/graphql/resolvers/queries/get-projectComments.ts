@@ -5,12 +5,8 @@ import { QueryResolvers } from '../../../types';
 export const getProjectComments: QueryResolvers['getProjectComments'] = async (
   _,
   { projectId },
-  { db, userId },
+  { db },
 ) => {
-  if (!userId) {
-    return [];
-  }
-
   try {
     const comments = await db
       .select()
@@ -23,10 +19,11 @@ export const getProjectComments: QueryResolvers['getProjectComments'] = async (
       projectId: comment.projectId,
       authorId: comment.authorId,
       content: comment.content,
-      createdAt: comment.createdAt,
-      updatedAt: comment.updatedAt,
+      createdAt: String(comment.createdAt),
+      updatedAt: String(comment.updatedAt),
     }));
   } catch (err: unknown) {
+    console.error('Error fetching project comments:', err);
     return [];
   }
 };

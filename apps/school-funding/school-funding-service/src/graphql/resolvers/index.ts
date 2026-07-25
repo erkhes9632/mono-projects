@@ -4,12 +4,17 @@ import * as Mutation from './mutations';
 export const resolvers = {
   Query: {
     getUsers: Query.getUsers,
+    getUserById: Query.getUserById,
     getProjectById: Query.getProjectById,
     getProjects: Query.getProjects,
+    getMyProjects: Query.getMyProjects,
     getProjectComments: Query.getProjectComments,
     getFundedProjects: Query.getFundedProjects,
     getLeaderboardProjects: Query.getLeaderboardProjects,
     getUserTransactions: Query.getUserTransactions,
+    getUserProjects: Query.getUserProjects,
+    getNotifications: Query.getNotifications,
+    getUnreadNotificationCount: Query.getUnreadNotificationCount,
   },
   Mutation: {
     createUser: Mutation.createUser,
@@ -24,5 +29,8 @@ export const resolvers = {
     deleteMe: Mutation.deleteMe,
     stakeCoins: Mutation.stakeCoins,
     updateUserRole: Mutation.updateUserRole,
+    markNotificationRead: Mutation.markNotificationRead,
+    markAllNotificationsRead: Mutation.markAllNotificationsRead,
+    addCoinsToStudent: Mutation.addCoinsToStudent,
   },
 };

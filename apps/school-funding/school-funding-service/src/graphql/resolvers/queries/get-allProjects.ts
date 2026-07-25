@@ -5,7 +5,7 @@ import { QueryResolvers, ProjectStatus, Role } from '../../../types';
 
 export const getProjects: QueryResolvers['getProjects'] = async (
   _,
-  __,
+  { status },
   { db, userId },
 ) => {
   if (!userId) {
@@ -21,22 +21,23 @@ export const getProjects: QueryResolvers['getProjects'] = async (
       .where(eq(usersTable.id, userId));
 
     if (!currentUser) {
-      throw new GraphQLError('User did not found.');
+      throw new GraphQLError('User not found.');
     }
 
-    let projects;
+    let queryCondition;
 
-    if (currentUser.role === Role.TEACHER) {
-      projects = await db
-        .select()
-        .from(projectsTable)
-        .where(eq(projectsTable.status, ProjectStatus.PENDING));
+    if (status) {
+      queryCondition = eq(projectsTable.status, status);
+    } else if (currentUser.role === Role.TEACHER) {
+      queryCondition = eq(projectsTable.status, ProjectStatus.PENDING);
     } else {
-      projects = await db
-        .select()
-        .from(projectsTable)
-        .where(ne(projectsTable.status, ProjectStatus.PENDING));
+      queryCondition = ne(projectsTable.status, ProjectStatus.PENDING);
     }
+
+    const projects = await db
+      .select()
+      .from(projectsTable)
+      .where(queryCondition);
 
     return projects.map((project) => ({
       id: project.id,
@@ -47,8 +48,8 @@ export const getProjects: QueryResolvers['getProjects'] = async (
       status: project.status as ProjectStatus,
       reviewedById: project.reviewedById ?? null,
       totalCoinsCollected: project.totalCoinsCollected,
-      createdAt: project.createdAt,
-      updatedAt: project.updatedAt,
+      createdAt: String(project.createdAt),
+      updatedAt: String(project.updatedAt),
     }));
   } catch (err: unknown) {
     if (err instanceof GraphQLError) throw err;

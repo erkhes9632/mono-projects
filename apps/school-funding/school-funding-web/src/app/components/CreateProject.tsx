@@ -1,8 +1,20 @@
 'use client';
-import React, { useState, useRef } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { useMutation } from '@apollo/client/react';
-import { useUser } from '@clerk/nextjs';
 import { gql } from '@apollo/client';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import {
+  Sparkles,
+  Image as ImageIcon,
+  Loader2,
+  X,
+  ArrowRight,
+  AlertCircle,
+  CheckCircle2,
+  Lightbulb,
+} from 'lucide-react';
 
 const CREATE_PROJECT_MUTATION = gql`
   mutation CreateProject($input: ProjectInput!) {
@@ -18,13 +30,14 @@ const CREATE_PROJECT_MUTATION = gql`
 
 export default function CreateProject() {
   const { user, isLoaded } = useUser();
+  const router = useRouter();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-
-  // Зургийн файл болон Preview харуулах state-үүд
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -32,53 +45,53 @@ export default function CreateProject() {
     CREATE_PROJECT_MUTATION,
   );
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
   if (!isLoaded)
     return (
-      <p className="text-center p-4 text-gray-500 animate-pulse">
-        Уншиж байна...
-      </p>
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-6 h-6 animate-spin text-[#E85D3A]" />
+      </div>
     );
+
   if (!user)
     return (
-      <p className="text-center p-4 text-red-500 font-semibold">
-        Та эхлээд нэвтрэнэ үү.
-      </p>
+      <div className="text-center py-16">
+        <p className="text-[#EAE2D5]/80">Please sign in to create a project.</p>
+      </div>
     );
 
-  // Файл сонгох үед ажиллах функц
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      // Сонгосон зургийг дэлгэц дээр урьдчилж харуулах (Preview) URL үүсгэх
-      setPreviewUrl(URL.createObjectURL(file));
+    setFileError(null);
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) {
+      setFileError('Image must be under 3MB');
+      return;
     }
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
-  // Зургийг сервер рүү хуулж, жинхэнэ URL авах функц (Жишээ бүтэц)
-  const uploadImageToServer = async (file: File): Promise<string> => {
-    // Хэрэв та Cloudflare R2 эсвэл Uploadthing ашиглаж байгаа бол энд upload логикоо бичнэ.
-    // Жишээ болгож Base64 хэлбэрээр бэкэнд рүү шидэхээр форматлав:
-    return new Promise((resolve, reject) => {
+  const uploadImageToServer = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (err) => reject(err);
+      reader.onerror = reject;
     });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUploading(true);
-
     try {
       let uploadedImageUrl = '';
-
-      // Хэрэв хэрэв файл сонгосон байвал эхлээд сервер рүү хуулж URL авна
-      if (selectedFile) {
+      if (selectedFile)
         uploadedImageUrl = await uploadImageToServer(selectedFile);
-      }
-
       await createProject({
         variables: {
           input: {
@@ -89,13 +102,8 @@ export default function CreateProject() {
           },
         },
       });
-
-      alert('Төсөл амжилттай үүслээ! 🎉');
-      // Form-оо цэвэрлэх
-      setTitle('');
-      setDescription('');
-      setSelectedFile(null);
-      setPreviewUrl(null);
+      setSuccess(true);
+      setTimeout(() => router.push('/student-dashboard'), 1500);
     } catch (err) {
       console.error(err);
     } finally {
@@ -105,49 +113,83 @@ export default function CreateProject() {
 
   const isLoading = mutationLoading || isUploading;
 
-  return (
-    <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-100 mt-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
-        Шинэ төсөл нэмэх
-      </h2>
+  if (success) {
+    return (
+      <div className="text-center py-20">
+        <div className="w-16 h-16 rounded-2xl bg-[#E85D3A]/15 border border-[#E85D3A]/20 flex items-center justify-center mx-auto mb-4">
+          <CheckCircle2 className="w-8 h-8 text-[#E85D3A]" />
+        </div>
+        <h2 className="text-xl font-bold text-[#EAE2D5] mb-2">
+          Project Submitted! 🎉
+        </h2>
+        <p className="text-sm text-[#EAE2D5]/80">Redirecting to dashboard...</p>
+      </div>
+    );
+  }
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Төслийн нэр */}
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 rounded-xl bg-[#E85D3A]/15 border border-[#E85D3A]/20">
+          <Sparkles className="w-5 h-5 text-[#E85D3A]" />
+        </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Төслийн нэр
+          <h1 className="text-xl font-bold text-[#EAE2D5]">
+            Propose a Project
+          </h1>
+          <p className="text-xs text-[#EAE2D5]/80 mt-0.5">
+            Share your idea to make a difference
+          </p>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-xl bg-[#E85D3A]/10 border border-[#E85D3A]/20 flex items-start gap-3">
+        <Lightbulb className="w-4 h-4 text-[#E85D3A] mt-0.5 shrink-0" />
+        <div className="text-[11px] text-[#EAE2D5]/80 leading-relaxed">
+          <span className="text-[#E85D3A] font-medium">
+            Tips for a great project:
+          </span>{' '}
+          Be specific about what you want to achieve, explain the impact on the
+          school community, and add a compelling image.
+        </div>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="p-6 rounded-2xl bg-[#2D323E] border border-[#E85D3A]/20 space-y-5"
+      >
+        <div>
+          <label className="block text-[11px] font-semibold text-[#EAE2D5]/80 uppercase tracking-wider mb-2">
+            Project Title
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            placeholder="Төслийн гарчиг оруулна уу"
-            className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition"
+            placeholder="e.g., School Garden Renovation"
+            className="w-full px-4 py-3 rounded-xl bg-[#E85D3A]/10 border border-[#E85D3A]/20 text-[#EAE2D5] text-sm placeholder-[#242831] focus:outline-none focus:border-[#E85D3A]/40 transition"
           />
         </div>
 
-        {/* Тайлбар */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Төслийн тайлбар
+          <label className="block text-[11px] font-semibold text-[#EAE2D5]/80 uppercase tracking-wider mb-2">
+            Description
           </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
-            rows={4}
-            placeholder="Төслийнхөө талаар дэлгэрэнгүй бичээрэй..."
-            className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition resize-none"
+            rows={5}
+            placeholder="Describe your project in detail — what is it, why is it needed, how will it benefit the community?"
+            className="w-full px-4 py-3 rounded-xl bg-[#E85D3A]/10 border border-[#E85D3A]/20 text-[#EAE2D5] text-sm placeholder-[#242831] focus:outline-none focus:border-[#E85D3A]/40 transition resize-none"
           />
         </div>
 
-        {/* Зураг оруулах хэсэг (File Drag & Drop загвартай) */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Төслийн зураг
+          <label className="block text-[11px] font-semibold text-[#EAE2D5]/80 uppercase tracking-wider mb-2">
+            Project Image (optional)
           </label>
-
           <input
             type="file"
             accept="image/*"
@@ -159,76 +201,62 @@ export default function CreateProject() {
           {!previewUrl ? (
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50/30 transition"
+              className="border-2 border-dashed border-[#E85D3A]/30 rounded-xl p-8 text-center cursor-pointer hover:border-[#E85D3A]/50 hover:bg-[#E85D3A]/[0.03] transition"
             >
-              <span className="text-4xl block mb-2">📸</span>
-              <p className="text-sm font-medium text-gray-600">
-                Зураг сонгох бол энд дарна уу
+              <ImageIcon className="w-8 h-8 mx-auto mb-2 text-[#EAE2D5]/80" />
+              <p className="text-xs font-medium text-[#EAE2D5]/80">
+                Click to upload an image
               </p>
-              <p className="text-xs text-gray-400 mt-1">
-                PNG, JPG, WEBP (Макс 5МБ)
+              <p className="text-[10px] text-[#EAE2D5]/80/50 mt-1">
+                PNG, JPG, WEBP (max 3MB)
               </p>
             </div>
           ) : (
-            <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 p-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+            <div className="relative rounded-xl overflow-hidden bg-[#E85D3A]/10 border border-[#E85D3A]/20">
               <img
                 src={previewUrl}
                 alt="Preview"
-                className="w-full h-48 object-cover rounded-lg"
+                className="w-full h-48 object-cover"
               />
               <button
                 type="button"
                 onClick={() => {
                   setSelectedFile(null);
                   setPreviewUrl(null);
+                  setFileError(null);
+                  if (fileInputRef.current) fileInputRef.current.value = '';
                 }}
-                className="absolute top-4 right-4 bg-red-500 text-white p-1.5 rounded-full shadow hover:bg-red-600 transition text-xs font-bold px-2.5"
+                className="absolute top-3 right-3 p-1.5 rounded-lg bg-[#2D323E]/80 backdrop-blur-md text-[#EAE2D5]/80 hover:text-[#E85D3A] transition"
               >
-                Устгах
+                <X className="w-4 h-4" />
               </button>
             </div>
           )}
+          {fileError && (
+            <p className="text-xs text-red-400 mt-2">{fileError}</p>
+          )}
         </div>
 
-        {/* Алдаа харуулах */}
         {error && (
-          <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">
-            ⚠️ Алдаа: {error.message}
+          <div className="p-3 rounded-xl bg-[#E85D3A]/10 border border-[#E85D3A]/20 text-[#EAE2D5]/80 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            {error.message}
           </div>
         )}
 
-        {/* Илгээх товч */}
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 text-white font-semibold py-3.5 rounded-xl hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed shadow-lg shadow-blue-600/20 transition duration-200"
+          className="w-full py-3 rounded-xl bg-[#E85D3A] text-white font-bold text-sm shadow-lg shadow-[#E85D3A]/20 hover:bg-[#D14C2A] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isLoading ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Төслийг үүсгэж байна...
-            </span>
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" /> Submitting...
+            </>
           ) : (
-            'Төсөл үүсгэх'
+            <>
+              <ArrowRight className="w-4 h-4" /> Submit Project
+            </>
           )}
         </button>
       </form>

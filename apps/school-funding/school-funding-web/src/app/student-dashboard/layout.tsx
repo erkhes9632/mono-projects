@@ -10,11 +10,10 @@ export default function StudentLayout({
 }) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#0f172a]">
+      <div className="flex min-h-screen w-full bg-[#2D323E]">
         <StudentSidebar />
-
         <div className="flex-1 flex flex-col min-w-0">
-          <main className="p-8 lg:p-12 max-w-5xl w-full mx-auto transition-all duration-300">
+          <main className="flex-1 p-6 lg:p-10 xl:p-12 max-w-7xl w-full mx-auto transition-all duration-300">
             {children}
           </main>
         </div>

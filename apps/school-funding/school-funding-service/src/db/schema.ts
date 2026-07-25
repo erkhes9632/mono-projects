@@ -84,6 +84,28 @@ export const commentsTable = sqliteTable('comments_table', {
     .notNull(),
 });
 
+// Notifications Table
+export type NotificationType = 'PROJECT_REVIEWED' | 'NEW_COMMENT' | 'PROJECT_FUNDED';
+
+export const notificationsTable = sqliteTable('notifications_table', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  userId: text('user_id')
+    .notNull()
+    .references(() => usersTable.id, { onDelete: 'cascade' }),
+  type: text('type').$type<NotificationType>().notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  projectId: text('project_id').references(() => projectsTable.id, {
+    onDelete: 'set null',
+  }),
+  isRead: int('is_read', { mode: 'boolean' }).default(false).notNull(),
+  createdAt: text('created_at')
+    .$defaultFn(() => new Date().toISOString())
+    .notNull(),
+});
+
 // Coin Transactions Audit Log Table
 export const coinTransactionsTable = sqliteTable('coin_transactions_table', {
   id: text('id')

@@ -43,6 +43,7 @@ export const typeDefs = gql`
     totalCoinsCollected: Int!
     createdAt: String!
     updatedAt: String!
+    comments: [Comment!]!
   }
 
   type Funding {
@@ -71,6 +72,17 @@ export const typeDefs = gql`
     createdAt: String!
   }
 
+  type Notification {
+    id: ID!
+    userId: String!
+    type: String!
+    title: String!
+    message: String!
+    projectId: String
+    isRead: Boolean!
+    createdAt: String!
+  }
+
   type MutationResponse {
     success: Boolean!
     message: String!
@@ -91,20 +103,24 @@ export const typeDefs = gql`
   }
 
   input CommentInput {
-    projectId: String!
-    authorId: String!
+    projectId: ID!
     content: String!
   }
 
   # Queries
   type Query {
     getUsers(searchName: String): [User!]!
+    getUserById(id: ID): User
     getProjects(status: ProjectStatus): [Project!]!
     getProjectById(id: ID!): Project
+    getMyProjects: [Project!]!
     getProjectComments(projectId: ID!): [Comment!]!
     getUserTransactions(userId: ID!): [CoinTransaction!]!
     getFundedProjects(limit: Int): [Project!]!
     getLeaderboardProjects(limit: Int): [Project!]!
+    getUserProjects(userId: ID!): [Project!]!
+    getNotifications(onlyUnread: Boolean): [Notification!]!
+    getUnreadNotificationCount: Int!
   }
 
   # Mutations
@@ -117,7 +133,7 @@ export const typeDefs = gql`
       reviewerId: ID!
       status: ProjectStatus!
     ): Project!
-    stakeCoins(projectId: ID!, studentId: ID!, amount: Int!): MutationResponse!
+    stakeCoins(projectId: ID!, amount: Int!): MutationResponse!
     addComment(input: CommentInput!): Comment!
     updateMe(input: UserInput!): User!
     deleteMe: MutationResponse!
@@ -125,5 +141,8 @@ export const typeDefs = gql`
     deleteProject(id: ID!): MutationResponse!
     updateComment(id: ID!, content: String!): Comment!
     deleteComment(id: ID!): MutationResponse!
+    markNotificationRead(id: ID!): MutationResponse!
+    markAllNotificationsRead: MutationResponse!
+    addCoinsToStudent(studentId: ID!, amount: Int!): MutationResponse!
   }
 `;

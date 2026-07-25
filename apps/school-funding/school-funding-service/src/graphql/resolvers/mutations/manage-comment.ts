@@ -8,20 +8,24 @@ export const updateComment: MutationResolvers['updateComment'] = async (
   { id, content },
   { db, userId },
 ) => {
-  if (!userId)
-    throw new GraphQLError('SignIn', {
+  if (!userId) {
+    throw new GraphQLError('You need to SignIn', {
       extensions: { code: 'UNAUTHENTICATED' },
     });
+  }
 
   const [comment] = await db
     .select()
     .from(commentsTable)
     .where(eq(commentsTable.id, id));
-  if (!comment) throw new GraphQLError('Can not Find');
-  if (comment.authorId !== userId)
-    throw new GraphQLError('You can not access', {
+
+  if (!comment) throw new GraphQLError('Comment not found');
+
+  if (comment.authorId !== userId) {
+    throw new GraphQLError('You do not have permission', {
       extensions: { code: 'FORBIDDEN' },
     });
+  }
 
   const [updated] = await db
     .update(commentsTable)
@@ -29,7 +33,11 @@ export const updateComment: MutationResolvers['updateComment'] = async (
     .where(eq(commentsTable.id, id))
     .returning();
 
-  return updated as CommentType;
+  return {
+    ...updated,
+    createdAt: String(updated.createdAt),
+    updatedAt: String(updated.updatedAt),
+  } as unknown as CommentType;
 };
 
 export const deleteComment: MutationResolvers['deleteComment'] = async (
@@ -37,25 +45,29 @@ export const deleteComment: MutationResolvers['deleteComment'] = async (
   { id },
   { db, userId },
 ) => {
-  if (!userId)
-    throw new GraphQLError('SignIn', {
+  if (!userId) {
+    throw new GraphQLError('You need to SignIn', {
       extensions: { code: 'UNAUTHENTICATED' },
     });
+  }
 
   const [comment] = await db
     .select()
     .from(commentsTable)
     .where(eq(commentsTable.id, id));
-  if (!comment) throw new GraphQLError('Can not find');
-  if (comment.authorId !== userId)
-    throw new GraphQLError('You can not access', {
+
+  if (!comment) throw new GraphQLError('Comment not found');
+
+  if (comment.authorId !== userId) {
+    throw new GraphQLError('You do not have permission', {
       extensions: { code: 'FORBIDDEN' },
     });
+  }
 
   await db.delete(commentsTable).where(eq(commentsTable.id, id));
 
   return {
     success: true,
-    message: 'Succesfully deleted',
+    message: 'Successfully deleted',
   };
 };

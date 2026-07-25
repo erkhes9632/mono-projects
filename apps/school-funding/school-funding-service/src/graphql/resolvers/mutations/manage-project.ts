@@ -8,20 +8,23 @@ export const updateProject: MutationResolvers['updateProject'] = async (
   { id, input },
   { db, userId },
 ) => {
-  if (!userId)
+  if (!userId) {
     throw new GraphQLError('SignIn', {
       extensions: { code: 'UNAUTHENTICATED' },
     });
+  }
 
   const [project] = await db
     .select()
     .from(projectsTable)
     .where(eq(projectsTable.id, id));
-  if (!project) throw new GraphQLError('NO project found');
-  if (project.creatorId !== userId)
+
+  if (!project) throw new GraphQLError('No project found');
+  if (project.creatorId !== userId) {
     throw new GraphQLError('You can not access.', {
       extensions: { code: 'FORBIDDEN' },
     });
+  }
 
   const [updated] = await db
     .update(projectsTable)
@@ -35,10 +38,16 @@ export const updateProject: MutationResolvers['updateProject'] = async (
     .returning();
 
   return {
-    ...updated,
-    images: Array.isArray(updated.images) ? (updated.images as string[]) : [],
+    id: updated.id,
+    title: updated.title,
+    description: updated.description,
+    images: Array.isArray(updated.images) ? updated.images : [],
+    creatorId: updated.creatorId,
     status: updated.status as ProjectStatus,
     reviewedById: updated.reviewedById ?? null,
+    totalCoinsCollected: updated.totalCoinsCollected,
+    createdAt: String(updated.createdAt),
+    updatedAt: String(updated.updatedAt),
   };
 };
 
@@ -47,25 +56,28 @@ export const deleteProject: MutationResolvers['deleteProject'] = async (
   { id },
   { db, userId },
 ) => {
-  if (!userId)
+  if (!userId) {
     throw new GraphQLError('SignIn.', {
       extensions: { code: 'UNAUTHENTICATED' },
     });
+  }
 
   const [project] = await db
     .select()
     .from(projectsTable)
     .where(eq(projectsTable.id, id));
-  if (!project) throw new GraphQLError('NO project found');
-  if (project.creatorId !== userId)
+
+  if (!project) throw new GraphQLError('No project found');
+  if (project.creatorId !== userId) {
     throw new GraphQLError('You can not access', {
       extensions: { code: 'FORBIDDEN' },
     });
+  }
 
   await db.delete(projectsTable).where(eq(projectsTable.id, id));
 
   return {
     success: true,
-    message: 'Succesfully deleted',
+    message: 'Successfully deleted',
   };
 };
