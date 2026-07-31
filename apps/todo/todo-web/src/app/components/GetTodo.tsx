@@ -29,7 +29,7 @@ export const GetTodos = () => {
   const [completeTodo] = useMutation(COMPLETE_TODO, {
     refetchQueries: [
       { query: GET_TODOS, variables: { userId: currentUser?.id } },
-      { query: GET_USER_BY_ID },
+      { query: GET_USER_BY_ID, variables: { id: currentUser?.id || '' } },
     ],
   });
 

@@ -17,6 +17,7 @@ function ProfileContent() {
   const [deleteUser, { loading: deleting }] = useMutation(DELETE_USER);
 
   const { data: userData } = useQuery(GET_USER_BY_ID, {
+    variables: { id: currentUser?.id || '' },
     skip: !currentUser?.id,
     fetchPolicy: 'network-only',
   });
@@ -68,9 +69,7 @@ function ProfileContent() {
     }
   };
 
-  const usersList = (userData as any)?.getUsers || [];
-  const matchedUser = usersList.find((u: any) => u.id === currentUser.id);
-  const dbUser = matchedUser || currentUser || { level: 1, xp: 0 };
+  const dbUser = (userData as any)?.getUserById || currentUser || { level: 1, xp: 0 };
 
   const currentLevel = dbUser.level ?? 1;
   const currentXp = dbUser.xp ?? 0;

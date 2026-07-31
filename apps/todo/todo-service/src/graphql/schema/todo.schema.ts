@@ -1,6 +1,4 @@
-import gql from 'graphql-tag';
-
-export const todoTypeDefs = gql`
+export const todoTypeDefs = `
   type Todo {
     id: ID!
     title: String!

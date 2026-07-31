@@ -4,6 +4,7 @@ import * as Mutation from './mutations';
 export const resolvers = {
   Query: {
     getUsers: Query.getUsers,
+    getUserById: Query.getUserById,
     getTodos: Query.getTodos,
   },
   Mutation: {
