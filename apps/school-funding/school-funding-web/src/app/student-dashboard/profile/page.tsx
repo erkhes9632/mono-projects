@@ -121,9 +121,9 @@ export default function StudentProfilePage() {
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 relative">
           <div className="relative">
             <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#242831]/50 bg-[#242831]/30 shadow-xl">
-              {user?.imageUrl ? (
+              {userInfo?.avatarUrl || user?.imageUrl ? (
                 <img
-                  src={user.imageUrl}
+                  src={userInfo?.avatarUrl || user?.imageUrl}
                   alt=""
                   className="w-full h-full object-cover"
                 />
@@ -286,7 +286,7 @@ export default function StudentProfilePage() {
 
       <EditProfileModal
         initialName={userInfo?.userName || user?.fullName || 'User'}
-        initialAvatarUrl={user?.imageUrl || ''}
+        initialAvatarUrl={userInfo?.avatarUrl || user?.imageUrl || ''}
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onUpdated={() => refetchUser()}

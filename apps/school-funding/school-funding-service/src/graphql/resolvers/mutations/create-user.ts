@@ -14,6 +14,12 @@ export const createUser: MutationResolvers['createUser'] = async (
     throw new GraphQLError('You need to SignIn');
   }
 
+  if (!email) {
+    throw new GraphQLError('Email is required to create a user', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
+  }
+
   return await db
     .transaction(async (tx) => {
       const existingUsers = await tx

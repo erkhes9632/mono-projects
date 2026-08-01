@@ -123,10 +123,6 @@ export default function OnboardingPage() {
             input: { userName, email, avatarUrl },
           },
         });
-
-        await updateUserRole({
-          variables: { role },
-        });
       } catch (dbErr) {
         console.warn('DB Sync warning (user may already exist):', dbErr);
         // If createUser failed because user was already created by webhook,
@@ -145,6 +141,18 @@ export default function OnboardingPage() {
         } catch (updateErr) {
           console.warn('Fallback updateMe also failed:', updateErr);
         }
+      }
+
+      // Always sync the selected role to the backend DB. The Clerk webhook
+      // creates users with a default STUDENT role, so skipping this when the
+      // user already exists leaves TEACHER users unable to review projects,
+      // add coins, or view student projects.
+      try {
+        await updateUserRole({
+          variables: { role },
+        });
+      } catch (roleErr) {
+        console.warn('Role sync warning:', roleErr);
       }
 
       // Wait a moment so user sees the success

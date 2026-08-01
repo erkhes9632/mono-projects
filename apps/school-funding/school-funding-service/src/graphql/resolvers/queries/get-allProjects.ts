@@ -24,20 +24,24 @@ export const getProjects: QueryResolvers['getProjects'] = async (
       throw new GraphQLError('User not found.');
     }
 
-    let queryCondition;
+    let projects;
 
     if (status) {
-      queryCondition = eq(projectsTable.status, status);
+      projects = await db
+        .select()
+        .from(projectsTable)
+        .where(eq(projectsTable.status, status));
     } else if (currentUser.role === Role.TEACHER) {
-      queryCondition = eq(projectsTable.status, ProjectStatus.PENDING);
+      // Teachers see all projects when no status filter is provided
+      // (used by the teacher dashboard stats and the review "All" tab)
+      projects = await db.select().from(projectsTable);
     } else {
-      queryCondition = ne(projectsTable.status, ProjectStatus.PENDING);
+      // Students only see non-pending projects
+      projects = await db
+        .select()
+        .from(projectsTable)
+        .where(ne(projectsTable.status, ProjectStatus.PENDING));
     }
-
-    const projects = await db
-      .select()
-      .from(projectsTable)
-      .where(queryCondition);
 
     return projects.map((project) => ({
       id: project.id,

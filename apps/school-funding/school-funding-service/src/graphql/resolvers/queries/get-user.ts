@@ -15,12 +15,13 @@ export const getUsers: QueryResolvers['getUsers'] = async (
   }
 
   try {
-    const query = db.select().from(usersTable);
-
     // SQLite/D1 дээр ilike байдаггүй тул like ашиглав
-    if (searchName) {
-      query.where(like(usersTable.userName, `%${searchName}%`));
-    }
+    const query = searchName
+      ? db
+          .select()
+          .from(usersTable)
+          .where(like(usersTable.userName, `%${searchName}%`))
+      : db.select().from(usersTable);
 
     const users = await query;
 

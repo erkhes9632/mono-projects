@@ -23,6 +23,12 @@ export const updateMe: MutationResolvers['updateMe'] = async (
     .where(eq(usersTable.id, userId))
     .returning();
 
+  if (!updatedUser) {
+    throw new GraphQLError('User not found in database', {
+      extensions: { code: 'NOT_FOUND' },
+    });
+  }
+
   return updatedUser as unknown as UserType;
 };
 

@@ -91,7 +91,8 @@ export const typeDefs = gql`
   # Inputs
   input UserInput {
     userName: String!
-    email: String!
+    # email is only required when creating a user; updateMe must work without it
+    email: String
     avatarUrl: String
   }
 

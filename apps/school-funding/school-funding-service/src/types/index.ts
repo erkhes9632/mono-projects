@@ -102,9 +102,10 @@ export type NotificationType = {
 // Input Types
 export type UserInput = {
   userName: string;
-  email: string;
+  // email is required by createUser but not by updateMe (Edit Profile)
+  email?: string;
   avatarUrl?: string;
-  role: Role;
+  role?: Role;
 };
 
 export type ProjectInput = {
