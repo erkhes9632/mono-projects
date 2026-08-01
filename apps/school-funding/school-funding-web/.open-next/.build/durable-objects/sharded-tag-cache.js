@@ -1,19 +1,19 @@
 globalThis.openNextDebug = false;globalThis.openNextVersion = "4.1.0";globalThis.nextVersion = "16.1.7";
 
-// ../../../node_modules/.bun/@opennextjs+cloudflare@1.20.2+6eb105ef2a28a385/node_modules/@opennextjs/cloudflare/dist/api/durable-objects/sharded-tag-cache.js
+// ../../../node_modules/.bun/@opennextjs+cloudflare@1.20.2+411dfbdd915026dc/node_modules/@opennextjs/cloudflare/dist/api/durable-objects/sharded-tag-cache.js
 import { DurableObject } from "cloudflare:workers";
 
-// ../../../node_modules/.bun/@opennextjs+cloudflare@1.20.2+6eb105ef2a28a385/node_modules/@opennextjs/cloudflare/dist/api/cloudflare-context.js
+// ../../../node_modules/.bun/@opennextjs+cloudflare@1.20.2+411dfbdd915026dc/node_modules/@opennextjs/cloudflare/dist/api/cloudflare-context.js
 var cloudflareContextSymbol = Symbol.for("__cloudflare-context__");
 
-// ../../../node_modules/.bun/@opennextjs+cloudflare@1.20.2+6eb105ef2a28a385/node_modules/@opennextjs/cloudflare/dist/api/overrides/internal.js
+// ../../../node_modules/.bun/@opennextjs+cloudflare@1.20.2+411dfbdd915026dc/node_modules/@opennextjs/cloudflare/dist/api/overrides/internal.js
 var debugCache = (name, ...args) => {
   if (process.env.NEXT_PRIVATE_DEBUG_CACHE) {
     console.log(`[${name}] `, ...args);
   }
 };
 
-// ../../../node_modules/.bun/@opennextjs+cloudflare@1.20.2+6eb105ef2a28a385/node_modules/@opennextjs/cloudflare/dist/api/durable-objects/sharded-tag-cache.js
+// ../../../node_modules/.bun/@opennextjs+cloudflare@1.20.2+411dfbdd915026dc/node_modules/@opennextjs/cloudflare/dist/api/durable-objects/sharded-tag-cache.js
 var DOShardedTagCache = class extends DurableObject {
   sql;
   constructor(state, env) {

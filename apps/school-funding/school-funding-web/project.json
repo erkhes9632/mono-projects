@@ -10,6 +10,7 @@
     "executor": "nx:run-commands",
     "options": {
       "commands": [
+        "rm -rf .next && rm -rf .open-next",
         "bunx next build",
         "bunx opennextjs-cloudflare build --skipNextBuild",
         "bunx opennextjs-cloudflare deploy"

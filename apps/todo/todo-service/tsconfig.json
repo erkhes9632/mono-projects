@@ -1,9 +1,9 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "resolvePackageJsonImports": false,
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "resolvePackageJsonImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -11,8 +11,7 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "ignoreDeprecations": "6.0"
+    "noPropertyAccessFromIndexSignature": true
   },
   "files": [],
   "include": [],

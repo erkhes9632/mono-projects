@@ -3,7 +3,6 @@
   "compilerOptions": {
     // "rootDir": ".",
     "moduleResolution": "bundler",
-    // "ignoreDeprecations": "6.0",
     "resolvePackageJsonImports": true,
     "importHelpers": false,
     "target": "es2024",

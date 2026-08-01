@@ -17,6 +17,7 @@ const startServer = async () => {
       return { db };
     },
   });
+  console.log(`Server is running on ${url}`);
 };
 
 startServer().catch((err) => {

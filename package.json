@@ -2,6 +2,7 @@
   "name": "@erkhes-monorepo/source",
   "version": "0.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build": "nx build todo-service",
     "start": "bun apps/todo/todo-service/src/server.ts"

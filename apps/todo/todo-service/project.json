@@ -7,7 +7,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bun next build ",
+        "command": "bunx tsc -p tsconfig.lib.json --noEmit",
         "cwd": "apps/todo/todo-service"
       }
     },
