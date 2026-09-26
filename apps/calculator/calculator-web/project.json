@@ -1,0 +1,30 @@
+{
+  "name": "calculator-web",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/calculator/calculator-web",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx next dev",
+        "cwd": "apps/calculator/calculator-web"
+      }
+    },
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/calculator/calculator-web"
+      }
+    },
+    "start": {
+      "executor": "@nx/next:start",
+      "options": {
+        "buildTarget": "calculator-web:build"
+      }
+    }
+  }
+}

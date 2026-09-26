@@ -1,11 +1,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    // "rootDir": ".",
     "moduleResolution": "bundler",
     "resolvePackageJsonImports": true,
     "importHelpers": false,
-    "target": "es2024",
+    "target": "es2022",
     "module": "esnext",
     "skipLibCheck": true,
     "paths": {
@@ -23,7 +22,10 @@
       "@erkhes-monorepo/school-funding-service": [
         "./apps/school-funding/school-funding-service/src/index.ts"
       ],
-      "@erkhes-monorepo/clerk": ["./libs/shared/clerk/src/index.ts"]
+      "@erkhes-monorepo/clerk": ["./libs/shared/clerk/src/index.ts"],
+      "@erkhes-monorepo/solo-levelup-service": [
+        "./apps/solo-levelup/solo-levelup-service/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "dist"]

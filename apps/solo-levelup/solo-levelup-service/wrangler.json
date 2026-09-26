@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "solo-levelup-service",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-22",
+  "compatibility_flags": ["nodejs_compat"],
+  "dev": {
+    "port": 4002
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "solo-levelup-db",
+      "database_id": "9b4b7448-f3df-42b5-a09a-00ce75ee8c92",
+      "migrations_dir": "./drizzle"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "solo-levelup-service",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "solo-levelup-service/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project solo-levelup-service --web",
+  "targets": {
+    "serve-local": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx wrangler dev",
+        "cwd": "apps/solo-levelup/solo-levelup-service"
+      }
+    },
+    "serve-remote": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx wrangler dev --remote",
+        "cwd": "apps/solo-levelup/solo-levelup-service"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx wrangler deploy",
+        "cwd": "apps/solo-levelup/solo-levelup-service"
+      }
+    },
+    "drizzle:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx drizzle-kit generate",
+        "cwd": "apps/solo-levelup/solo-levelup-service"
+      }
+    },
+    "drizzle:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx drizzle-kit studio --config=drizzle-dev.config.ts",
+        "cwd": "apps/solo-levelup/solo-levelup-service"
+      }
+    },
+    "wrangler:migrate-remote": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "bunx wrangler d1 migrations apply CLOUDFLARE_DATABASE_ID --remote",
+        "cwd": "apps/solo-levelup/solo-levelup-service"
+      }
+    }
+  }
+}
